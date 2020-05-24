@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SpotifyAdBlocker
@@ -8,10 +9,8 @@ namespace SpotifyAdBlocker
         public SpotifyAdBlockerForm()
         {
             InitializeComponent();
-        }
-
-        private void SpotifyAdBlockerForm_Load(object sender, EventArgs e)
-        {
+            var resxicon = Properties.Resources.AppIcon;
+            Icon = resxicon;
         }
 
         private void PatchButtonActionClick(object sender, EventArgs e)

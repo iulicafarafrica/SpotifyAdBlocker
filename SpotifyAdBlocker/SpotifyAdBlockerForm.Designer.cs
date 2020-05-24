@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using System.ComponentModel;
 
 namespace SpotifyAdBlocker
@@ -40,7 +41,7 @@ namespace SpotifyAdBlocker
             this.Controls.Add(this.PatchButton);
             this.Name = "SpotifyAdBlockerForm";
             this.Text = "Spotify Adblocker";
-            this.Load += new System.EventHandler(this.SpotifyAdBlockerForm_Load);
+            this.Load += new System.EventHandler((object e, EventArgs args) => { });
             this.ResumeLayout(false);
 
         }
