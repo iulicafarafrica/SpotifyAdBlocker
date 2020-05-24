@@ -40,7 +40,7 @@ namespace SpotifyAdBlocker
             this.ClientSize = new System.Drawing.Size(800, 165);
             this.Controls.Add(this.PatchButton);
             this.Name = "SpotifyAdBlockerForm";
-            this.Text = "Spotify Adblocker";
+            this.Text = Program.IsAdmin ? "Spotify AdBlocker" : "Spotify AdBlocker: WARNING - NOT ADMIN";
             this.Load += new System.EventHandler((object e, EventArgs args) => { });
             this.ResumeLayout(false);
 
