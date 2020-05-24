@@ -13,7 +13,7 @@ Release | AnyCPU - embedded debug info
 
 ----
 
-NetUtilsSpotifyInjector and SpotifyChromeElfReplacer
+NetUtilsSpotifyInjector and SpotifyChromeElfReplacer (C++)
 
 Release | AnyCPU/x32 - no debug info
 
