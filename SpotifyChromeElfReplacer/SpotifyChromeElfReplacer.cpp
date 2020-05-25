@@ -1,5 +1,6 @@
 // Exported functions of this dll
 
+// necessary to invoke header into memory
 #include "stdafx.h"
 
 // invoke the assembler multiple times in a row in a loop to create easy/lightweight memory offset in stack (and maybe even heap, due to how the iasm is intertwined with many pointers so the iasm actually works)
