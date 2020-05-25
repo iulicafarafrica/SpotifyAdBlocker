@@ -1,2 +1,2 @@
-disasm-lib/* linguist-vendored
-mhook-lib/* linguist-vendored
+disasm-lib/* linguist-vendored=true
+mhook-lib/* linguist-vendored=true 
