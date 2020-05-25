@@ -1,13 +1,9 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2004, Matt Conover (mconover@gmail.com)
 #undef NDEBUG
 #include <assert.h>
 #include "disasm.h"
 #include "cpu.h"
 
-// Since addresses are internally represented as 64-bit, we need to specially handle
 // cases where IP + Displacement wraps around for 16-bit/32-bit operand size
-// Otherwise, ignorethe possibility of wraparounds
 #define SUPPORT_WRAPAROUND
 
 #ifdef NO_SANITY_CHECKS
@@ -28,10 +24,6 @@
 #ifdef _WIN64
 #pragma warning(disable:4311 4312)
 #endif
-
-////////////////////////////////////////////////////////////////////////
-// Internal macros
-////////////////////////////////////////////////////////////////////////
 
 #define VIRTUAL_ADDRESS ((U64)Instruction->Address + Instruction->VirtualAddressDelta)
 
@@ -205,10 +197,6 @@
 } 
 
 #define CHECK_AMD64_REG() { if (IS_AMD64()) Operand->Register += AMD64_DIFF; }
-
-////////////////////////////////////////////////////////////////////////
-// Internal structures/variables
-////////////////////////////////////////////////////////////////////////
 
 ARCHITECTURE_FORMAT_FUNCTIONS X86 = 
 {
@@ -544,32 +532,20 @@ OUTPUT_OPTYPE OptypeHandlers[] =
 #define OPTYPE_cpu  0x18000000 // pointer to CPU state structure
 #define OPTYPE_lea  0x19000000 // size set by other operand
 
-////////////////////////////////////////////////////////////////////////
-// Internal functions
-////////////////////////////////////////////////////////////////////////
-
-#ifdef TEST_DISASM // TODO: remove
-U32 X86_GetLength(INSTRUCTION *Instruction, U8 *Address);
-#endif
-
-INTERNAL BOOL IsValidLockPrefix(X86_INSTRUCTION *Instruction, U8 Opcode, U32 OpcodeLength, U8 Group, U8 OpcodeExtension);
+INTERNAL BOOL IsValidLockPrefix(X86_INSTRUCTION *X86Instruction, U8 Opcode, U32 OpcodeLength, U8 Group, U8 OpcodeExtension);
 INTERNAL U8 *SetOperands(INSTRUCTION *Instruction, U8 *Address, U32 Flags);
 INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERAND *Operand, U32 OperandIndex, BOOL SuppressErrors);
 INTERNAL U8 *SetModRM16(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERAND *Operand, U32 OperandIndex, BOOL SuppressErrors);
 INTERNAL U8 *SetSIB(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERAND *Operand, U32 OperandIndex, BOOL SuppressErrors);
 INTERNAL U64 ApplyDisplacement(U64 Address, INSTRUCTION *Instruction);
 
-//////////////////////////////////////////////////////////
-// Instruction setup
-//////////////////////////////////////////////////////////
-
 #define APPLY_OFFSET(addr) \
 { \
 	switch (X86Instruction->OperandSize) \
 	{ \
-		case 8: addr = ((U64)(addr + Instruction->VirtualAddressDelta)); break; \
-		case 4: addr = (U64)((U32)(addr + Instruction->VirtualAddressDelta)); break; \
-		case 2: addr = (U64)((U8)(addr + Instruction->VirtualAddressDelta)); break; \
+		case 8: (addr) = ((U64)((addr) + Instruction->VirtualAddressDelta)); break; \
+		case 4: (addr) = (U64)((U32)((addr) + Instruction->VirtualAddressDelta)); break; \
+		case 2: (addr) = (U64)((U8)((addr) + Instruction->VirtualAddressDelta)); break; \
 		default: assert(0); break; \
 	} \
 }
@@ -930,10 +906,6 @@ void OutputSegOffset(INSTRUCTION *Instruction, INSTRUCTION_OPERAND *Operand, U32
 	OutputAddress(Instruction, Operand, OperandIndex);	
 }
 
-////////////////////////////////////////////////////////////
-// Prologue support
-////////////////////////////////////////////////////////////
-
 typedef struct _PROLOGUE
 {
 	char *Data;
@@ -946,25 +918,14 @@ PROLOGUE StandardPrologues[] =
 	{ "\x55\x89\xe5", 3 },
 	{ "\x83\xec", 2 },
 	{ "\x81\xec", 2 },
-	// TODO: add AMD64 prologues
-	// TODO: add VS2003/VS2003 prologues
-	// TODO: add any unique prologues from other compilers
 	{ NULL, 0 }
 };
 
-// Find the first function between StartAddress and EndAddress
-// 
-// This will match a standard prologue and then analyze the following instructions to verify
-// it is a valid function
 U8 *X86_FindFunctionByPrologue(INSTRUCTION *Instruction, U8 *StartAddress, U8 *EndAddress, U32 Flags)
 {
 	assert(0); // TODO
 	return NULL;
 }
-
-//////////////////////////////////////////////////////////
-// Instruction decoder
-//////////////////////////////////////////////////////////
 
 BOOL X86_GetInstruction(INSTRUCTION *Instruction, U8 *Address, U32 Flags)
 {
@@ -979,8 +940,8 @@ BOOL X86_GetInstruction(INSTRUCTION *Instruction, U8 *Address, U32 Flags)
 	INSTRUCTION_OPERAND *Operand, *Operand1 = NULL;
 	DISASSEMBLER *Disassembler = Instruction->Disassembler;
 	BOOL Decode = Flags & DISASM_DECODE;
-	BOOL Disassemble = Flags & DISASM_DISASSEMBLE;
-	BOOL SuppressErrors = Flags & DISASM_SUPPRESSERRORS;
+	const BOOL Disassemble = Flags & DISASM_DISASSEMBLE;
+	const BOOL SuppressErrors = Flags & DISASM_SUPPRESSERRORS;
 
 	if (Disassemble && !Decode)
 	{
@@ -1196,7 +1157,6 @@ BOOL X86_GetInstruction(INSTRUCTION *Instruction, U8 *Address, U32 Flags)
 			assert(Instruction->AnomalyOccurred || Instruction->PrefixCount < X86_MAX_PREFIX_LENGTH);
 			Instruction->Prefixes[Instruction->PrefixCount] = Opcode;
 			Instruction->PrefixCount++;
-			//DISASM_OUTPUT(("[0x%08I64X] Prefix 0x%02X (prefix count %d)\n", VIRTUAL_ADDRESS, Opcode, Instruction->PrefixCount));
 		}
 		else
 		{
@@ -1205,8 +1165,7 @@ BOOL X86_GetInstruction(INSTRUCTION *Instruction, U8 *Address, U32 Flags)
 	}
 
 	// Check for REX opcode
-	// This is checked here instead of the prefix loop above because it must be the
-	// last prefix
+	// This is checked here instead of the prefix loop above because it must be the last prefix
 	if (IS_AMD64() && (Opcode >= REX_PREFIX_START && Opcode <= REX_PREFIX_END))
 	{
 		if (Instruction->PrefixCount >= X86_MAX_INSTRUCTION_LEN)
@@ -1254,7 +1213,7 @@ BOOL X86_GetInstruction(INSTRUCTION *Instruction, U8 *Address, U32 Flags)
 		X86Opcode = &X86_Opcodes_1[Opcode];
 		assert(!X86_PREFIX(X86Opcode));
 	}
-	//DISASM_OUTPUT(("[0x%08I64X] OperandSize = %d, AddressSize = %d\n", VIRTUAL_ADDRESS, X86Instruction->OperandSize, X86Instruction->AddressSize));
+	
 	Instruction->LastOpcode = Opcode;
 	Instruction->OpcodeAddress = Address-1;
 
@@ -1266,18 +1225,12 @@ BOOL X86_GetInstruction(INSTRUCTION *Instruction, U8 *Address, U32 Flags)
 
 	if (Opcode == X86_TWO_BYTE_OPCODE)
 	{
-		//
-		// Handle case that it is a group (with opcode extension), floating point, or two byte opcode
-		//
 		assert(!Instruction->OpcodeLength);
 		Instruction->LastOpcode = Opcode = *Address;
 		INSTR_INC(1); // increment Instruction->Length and address
 		assert(X86Opcode->Table == X86_Opcodes_2);
 		X86Opcode = &X86_Opcodes_2[Opcode];
 
-		//
-		// Check for errors
-		//
 		if (X86_INVALID(X86Opcode))
 		{
 			if (!SuppressErrors) printf("[0x%08I64X] ERROR: Invalid two byte opcode 0x%02X 0x%02X\n", VIRTUAL_ADDRESS, X86_TWO_BYTE_OPCODE, Opcode);
@@ -4229,8 +4182,6 @@ INTERNAL U8 *SetModRM16(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 // NOTE: Address points one byte after ModRM
 INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERAND *Operand, U32 OperandIndex, BOOL SuppressErrors)
 {
-	MODRM modrm;
-	REX_MODRM rex_modrm;
 	U32 i, ImmediateSize = 0;
 	X86_INSTRUCTION *X86Instruction = &Instruction->X86;
 
@@ -4239,14 +4190,11 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 		return SetModRM16(Instruction, Address, Operand, OperandIndex, SuppressErrors);
 	}
 
-	//DISASM_OUTPUT(("[SetModRM32] Length %d, modrm = 0x%02X\n", Instruction->Length, X86Instruction->modrm_b));
-	modrm = X86Instruction->modrm;
-	rex_modrm = X86Instruction->rex_modrm;
+	const MODRM modrm = X86Instruction->modrm;
+	const REX_MODRM rex_modrm = X86Instruction->rex_modrm;
 
-	//
 	// Both operands are registers
 	// Condition: mod = 3
-	//
 	if (modrm.mod == 3)
 	{
 		switch (Operand->Length)
@@ -4261,10 +4209,8 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 		Operand->Flags |= OP_REG;
 	}
 
-	// 
 	// Address is an absolute address (technically a 32-bit offset from DS:0)
 	// mod = 0 and rm = 5
-	//
 	else if (modrm.mod == 0 && modrm.rm == 5)
 	{
 		//DISASM_OUTPUT(("[SetModRM32] Absolute addressing (displacement 0x%08lX)\n", *(S32 *)Address));
@@ -4341,10 +4287,8 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 		X86_SET_ADDR();
 	}
 
-	//
 	// Addressing mode indicated by SIB byte
 	// Condition: mod = 0-2 and rm = 4
-	//
 	else if (modrm.rm == 4)
 	{
 		// The X86_SET_*() is called from within SetSIB()
@@ -4360,12 +4304,11 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 			switch (modrm.mod)
 			{
 				case 1: // 8-bit displacement
-					//DISASM_OUTPUT(("[SetModRM32] After SIB: displacement 0x%02X\n", *((S8 *)Address)));
+					c1:
 					X86Instruction->Displacement = (S64)(*((S8 *)Address));
 					INSTR_INC(1); // increment Instruction->Length and address
 					break;
 				case 2: // 32-bit displacement
-					//DISASM_OUTPUT(("[SetModRM32] After SIB: displacement 0x%08lX\n", *((S32 *)Address)));
 					X86Instruction->Displacement = (S64)*((S32 *)Address);
 					if (IS_VALID_ADDRESS(X86Instruction->Displacement))
 					{
@@ -4374,14 +4317,12 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 					}
 					INSTR_INC(4); // increment Instruction->Length and address
 					break;
+				default:
+					goto c1;
 			}	
 		}
 	}
 
-	// Indirect addressing
-	// Conditions:
-	// (1) mod = 0 and (rm = 0-3 or 6-7)
-	// (2) mod = 1-2 and rm != 4
 	else
 	{
 		switch (X86Instruction->AddressSize)
@@ -4399,15 +4340,12 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 		switch (modrm.mod)
 		{
 			case 0: // no displacement
-				//DISASM_OUTPUT(("[SetModRM32] Indirect addressing (no displacement, reg_rm = %d)\n", rex_modrm.rm));
 				break; 
 			case 1: // 8-bit signed displacement
-				//DISASM_OUTPUT(("[SetModRM32] Indirect addressing (displacement = 0x%02X, reg_rm = %d)\n", *(S8 *)Address, rex_modrm.rm));
 				X86Instruction->Displacement = (S64)(*((S8 *)Address));
 				INSTR_INC(1); // increment Instruction->Length and address
 				break;
 			case 2: // 32-bit displacement
-				//DISASM_OUTPUT(("[SetModRM32] Indirect addressing (displacement = 0x%08lX, reg_rm = %d)\n", *(S32 *)Address, rex_modrm.rm));
 				X86Instruction->Displacement = (S64)*((S32 *)Address);
 				if (IS_VALID_ADDRESS(X86Instruction->Displacement))
 				{
@@ -4415,6 +4353,8 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 					X86Instruction->HasFullDisplacement = TRUE;
 				}
 				INSTR_INC(4); // increment Instruction->Length and address
+				break;
+			default:
 				break;
 		}
 	}
@@ -4425,21 +4365,14 @@ INTERNAL U8 *SetModRM32(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERA
 // NOTE: Address points at SIB
 INTERNAL U8 *SetSIB(INSTRUCTION *Instruction, U8 *Address, INSTRUCTION_OPERAND *Operand, U32 OperandIndex, BOOL SuppressErrors)
 {
-	REX rex;
-	SIB sib;
-	REX_SIB rex_sib;
 	X86_INSTRUCTION *X86Instruction = &Instruction->X86;
 
 	X86Instruction->sib_b = *Address;
 	SET_SIB(X86Instruction->sib, *Address);
-	sib = X86Instruction->sib;
-	rex = X86Instruction->rex;
+	const SIB sib = X86Instruction->sib;
+	const REX rex = X86Instruction->rex;
 	SET_REX_SIB(X86Instruction->rex_sib, rex, sib);
-	rex_sib = X86Instruction->rex_sib;
-
-	//if (!X86Instruction->rex_b) DISASM_OUTPUT(("[0x%08I64X] SIB = 0x%02X (scale=%d, index=%d, base=%d)\n", VIRTUAL_ADDRESS, *Address, sib.scale, sib.index, sib.base)); \
-	//else DISASM_OUTPUT(("[0x%08I64X] SIB = 0x%02X (scale=%d, index=%d, base=%d)\n", VIRTUAL_ADDRESS, *Address, sib.scale, rex_sib.index, rex_sib.base)); \
-	//DISASM_OUTPUT(("[SetSIB] Current instruction length = %d\n", Instruction->Length));
+	const REX_SIB rex_sib = X86Instruction->rex_sib;
 
 	Operand->Flags |= OP_ADDRESS;
 	X86_SET_ADDR();

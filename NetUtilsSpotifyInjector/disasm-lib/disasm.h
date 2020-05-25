@@ -1,13 +1,3 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2004, Matt Conover (mconover@gmail.com)
-//
-// WARNING:
-// I wouldn't recommend changing any flags like OP_*, ITYPE_*, or *_MASK
-// aside from those marked as UNUSED. This is because the flags parts of
-// the flags are architecture independent and other are left to specific
-// architectures to define, so unless you understand the relationships
-// between them, I would leave them as is.
-
 #ifndef DISASM_H
 #define DISASM_H
 #ifdef __cplusplus
@@ -40,16 +30,11 @@ typedef ULONG64 U64;
 #define DISASM_ARCH_TYPE(dis) ((dis)->ArchType)
 #define INS_ARCH_TYPE(ins) DISASM_ARCH_TYPE((ins)->Disassembler)
 
-// NOTE: these should be as big set to the maximum of the supported architectures
 #define MAX_PREFIX_LENGTH 15
 #define MAX_OPERAND_COUNT 3
 #define MAX_INSTRUCTION_LENGTH 25
 #define MAX_OPCODE_LENGTH 3
 #define MAX_OPCODE_DESCRIPTION 256
-
-/////////////////////////////////////////////////////////////////////
-// Code branch
-/////////////////////////////////////////////////////////////////////
 
 #define MAX_CODE_REFERENCE_COUNT 3
 
@@ -64,10 +49,6 @@ typedef struct _CODE_BRANCH
 	struct _INSTRUCTION_OPERAND *Operand; // the operand containg the address
 } CODE_BRANCH;
 
-/////////////////////////////////////////////////////////////////////
-// Data references
-/////////////////////////////////////////////////////////////////////
-
 #define MAX_DATA_REFERENCE_COUNT 3
 
 typedef struct _DATA_REFERENCE
@@ -78,14 +59,8 @@ typedef struct _DATA_REFERENCE
 	struct _INSTRUCTION_OPERAND *Operand; // the operand containg the address
 } DATA_REFERENCE;
 
-////////////////////////////////////////////////////////////////////
-// Instruction
-/////////////////////////////////////////////////////////////////////
-
-//
 // Instruction types (bits 0-7)
 // Instruction groups (bits 8-26)
-//
 #define ITYPE_EXEC_OFFSET     (1<<8)
 #define ITYPE_ARITH_OFFSET    (1<<9)
 #define ITYPE_LOGIC_OFFSET    (1<<10)
@@ -111,10 +86,7 @@ typedef struct _DATA_REFERENCE
 #define ITYPE_EXT_UNUSED4     (1<<30)
 #define ITYPE_EXT_UNUSED5     (1<<31)
 
-//
 // X86-specific flags (bits 27-31)
-//
-
 #define ITYPE_EXT_64     ITYPE_EXT_UNUSED1 // Use index 1 if in 64-bit mode and 0 otherwise
 #define ITYPE_EXT_MODRM  ITYPE_EXT_UNUSED2 // ModRM byte may extend the opcode
 #define ITYPE_EXT_SUFFIX ITYPE_EXT_UNUSED3 // byte after ModRM/SIB/displacement is the third opcode
@@ -127,10 +99,7 @@ typedef struct _DATA_REFERENCE
 #define ITYPE_SSE2_OFFSET  ITYPE_UNUSED4_OFFSET
 #define ITYPE_SSE3_OFFSET  ITYPE_UNUSED5_OFFSET
 
-//
 // Instruction types
-//
-
 #define ITYPE_TYPE_MASK  0x7FFFFFFF
 #define ITYPE_GROUP_MASK 0x7FFFFF00
 
@@ -373,7 +342,7 @@ typedef enum _INSTRUCTION_TYPE
 #define OP_COND      (OP_CONDR|OP_CONDW)
 
 // Bits 16-31 are available for use outside of the opcode table, but they can only
-// be used in INSTRUCTION_OPERAND.Flags, they may conflit with the architecture specific
+// be used in INSTRUCTION_OPERAND.Flags, they may conflict with the architecture specific
 // operands. For example, bits 16-31 are used in X86 for AMODE_* and OPTYPE_*
 #define OP_ADDRESS    (1<<16)
 #define OP_LOCAL      (1<<17)
@@ -382,19 +351,11 @@ typedef enum _INSTRUCTION_TYPE
 #define OP_FAR        (1<<20)
 #define OP_IPREL      (1<<21)
 
-//
 // X86-specific flags (bits 27-31)
-//
 #define OP_MSR      (OP_SYS|OP_UNUSED)
 
-//
 // Other architecture flags
-//
 #define OP_DELAY  OP_UNUSED // delayed instruction (e.g., delayed branch that executes after the next instruction)
-
-/////////////////////////////////////////////////////////////////////
-// Architectures
-/////////////////////////////////////////////////////////////////////
 
 typedef enum _ARCHITECTURE_TYPE
 {
@@ -463,30 +424,11 @@ typedef struct _INSTRUCTION_OPERAND
 	U8 Unused : 2;
 	U16 Length;
 	
-
-	// If non-NULL, this indicates the target address of the instruction (e.g., a branch or
-	// a displacement with no base register). However, this address is only reliable if the
-	// image is mapped correctly (e.g., the executable is mapped as an image and fixups have
-	// been applied if it is not at its preferred image base).
-	//
-	// If disassembling a 16-bit DOS application, TargetAddress is in the context of 
-	// X86Instruction->Segment. For example, if TargetAddress is the address of a code branch, 
-	// it is in the CS segment (unless X86Instruction->HasSegmentOverridePrefix is set). If 
-	// TargetAddress is a data pointer, it is in the DS segment (unless 
-	// X86Instruction->HasSegmentOverridePrefix is set)
 	U64 TargetAddress;
 	U32 Register;
 
 	union
 	{
-		// All 8/16/32-bit operands are extended to 64-bits automatically
-		// If you want to downcast, check whether Flags & OP_SIGNED is set
-		// Like this:
-		// U32 GetOperand32(OPERAND *Operand)
-		// {
-		//	if (Operand->Flags & OP_SIGNED) return (S32)Operand->Value_S64;
-		//	else return (U32)Operand->Value_U64;
-		//}
 		U64 Value_U64;
 		S64 Value_S64;
 		U128 Value_U128;
@@ -528,17 +470,7 @@ typedef struct _INSTRUCTION
 	DATA_REFERENCE DataDst;
 	CODE_BRANCH CodeBranch;
 
-	// Direction depends on which direction the stack grows
-	// For example, on x86 a push results in StackChange < 0 since the stack grows down
-	// This is only relevant if (Group & ITYPE_STACK) is true
-	//
-	// If Groups & ITYPE_STACK is set but StackChange = 0, it means that the change
-	// couldn't be determined (non-constant)
 	LONG StackChange;
-
-	// Used to assist in debugging
-	// If set, the current instruction is doing something that requires special handling
-	// For example, popf can cause tracing to be disabled
 
 	U8 StringAligned : 1; // internal only
 	U8 NeedsEmulation : 1; // instruction does something that re

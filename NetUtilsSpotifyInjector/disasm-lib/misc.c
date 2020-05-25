@@ -1,5 +1,3 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2002, Matt Conover (mconover@gmail.com)
 #include "misc.h"
 
 BOOL IsHexChar(const BYTE ch)
@@ -18,7 +16,7 @@ BOOL IsHexChar(const BYTE ch)
 	}
 }
 
-// NOTE: caller must free the buffer returned
+// caller must free the buffer returned
 BYTE *HexToBinary(char *Input, DWORD InputLength, DWORD *OutputLength)
 {
 	DWORD i, j, ByteCount = 0;

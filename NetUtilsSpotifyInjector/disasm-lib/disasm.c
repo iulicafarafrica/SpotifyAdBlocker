@@ -1,8 +1,6 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2004, Matt Conover (mconover@gmail.com)
 #undef NDEBUG
 #include <assert.h>
-#include <windows.h>
+#include <Windows.h>
 #include "disasm.h"
 
 #ifdef NO_SANITY_CHECKS
@@ -10,10 +8,6 @@
 #undef assert
 #define assert(x)
 #endif
-
-//////////////////////////////////////////////////////////////////////
-// Global variables
-//////////////////////////////////////////////////////////////////////
 
 ARCHITECTURE_FORMAT SupportedArchitectures[] =
 {
@@ -33,25 +27,15 @@ typedef struct _DISASM_ARG_INFO
 	U32 Count;
 } DISASM_ARG_INFO;
 
-//////////////////////////////////////////////////////////////////////
-// Function prototypes
-//////////////////////////////////////////////////////////////////////
-
 BOOL InitInstruction(INSTRUCTION *Instruction, DISASSEMBLER *Disassembler);
 struct _ARCHITECTURE_FORMAT *GetArchitectureFormat(ARCHITECTURE_TYPE Type);
 
-//////////////////////////////////////////////////////////////////////
-// Disassembler setup
-//////////////////////////////////////////////////////////////////////
-
-BOOL InitDisassembler(DISASSEMBLER *Disassembler, ARCHITECTURE_TYPE Architecture)
+BOOL InitDisassembler(DISASSEMBLER *Disassembler, const ARCHITECTURE_TYPE Architecture)
 {
-	ARCHITECTURE_FORMAT *ArchFormat;
-
 	memset(Disassembler, 0, sizeof(DISASSEMBLER));
 	Disassembler->Initialized = DISASSEMBLER_INITIALIZED;
 	
-	ArchFormat = GetArchitectureFormat(Architecture);
+	ARCHITECTURE_FORMAT* ArchFormat = GetArchitectureFormat(Architecture);
 	if (!ArchFormat) { assert(0); return FALSE; }
 	Disassembler->ArchType = ArchFormat->Type;
 	Disassembler->Functions = ArchFormat->Functions;
@@ -63,10 +47,6 @@ void CloseDisassembler(DISASSEMBLER *Disassembler)
 	memset(Disassembler, 0, sizeof(DISASSEMBLER));
 }
 
-//////////////////////////////////////////////////////////////////////
-// Instruction setup
-//////////////////////////////////////////////////////////////////////
-
 BOOL InitInstruction(INSTRUCTION *Instruction, DISASSEMBLER *Disassembler)
 {
 	memset(Instruction, 0, sizeof(INSTRUCTION));
@@ -77,15 +57,7 @@ BOOL InitInstruction(INSTRUCTION *Instruction, DISASSEMBLER *Disassembler)
 	return TRUE;
 }
 
-// If Decode = FALSE, only the following fields are valid:
-// Instruction->Length, Instruction->Address, Instruction->Prefixes, Instruction->PrefixCount,
-// Instruction->OpcodeBytes, Instruction->Instruction->OpcodeLength, Instruction->Groups,
-// Instruction->Type, Instruction->OperandCount
-//
-// If Disassemble = TRUE, then Instruction->String is valid (also requires Decode = TRUE)
-//
-// WARNING: This will overwrite the previously obtained instruction
-INSTRUCTION *GetInstruction(DISASSEMBLER *Disassembler, U64 VirtualAddress, U8 *Address, U32 Flags)
+INSTRUCTION *GetInstruction(DISASSEMBLER *Disassembler, const U64 VirtualAddress, U8 *Address, const U32 Flags)
 {
 	if (Disassembler->Initialized != DISASSEMBLER_INITIALIZED) { assert(0); return NULL; }
 	assert(Address);
@@ -105,14 +77,9 @@ INSTRUCTION *GetInstruction(DISASSEMBLER *Disassembler, U64 VirtualAddress, U8 *
 	return &Disassembler->Instruction;
 }
 
-///////////////////////////////////////////////////////////////////////////
-// Miscellaneous
-///////////////////////////////////////////////////////////////////////////
-
-static ARCHITECTURE_FORMAT *GetArchitectureFormat(ARCHITECTURE_TYPE Type)
+static ARCHITECTURE_FORMAT *GetArchitectureFormat(const ARCHITECTURE_TYPE Type)
 {
-	ARCHITECTURE_FORMAT *Format;
-	for (Format = SupportedArchitectures; Format->Type != ARCH_UNKNOWN; Format++)
+	for (ARCHITECTURE_FORMAT* Format = SupportedArchitectures; Format->Type != ARCH_UNKNOWN; Format++)
 	{
 		if (Format->Type == Type) return Format;
 	}

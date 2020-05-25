@@ -2,6 +2,15 @@
 
 #include "stdafx.h"
 
+// invoke the assembler multiple times in a row in a loop to create easy/lightweight memory offset in stack (and maybe even heap, due to how the iasm is intertwined with many pointers so the iasm actually works)
+extern "C" __declspec(naked) void gc_invokeinlineassembler()
+{
+	for (auto i = 0; i != 3; i++)
+	{
+		__asm __asm __asm retn
+	}
+}
+
 bool AddDllToBlacklist (const wchar_t* dll_name) { return true; }
 void ClearReportsBetween_ExportThunk (time_t begin, time_t end) {}
 

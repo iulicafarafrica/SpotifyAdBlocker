@@ -1,5 +1,3 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2003, Matt Conover (mconover@gmail.com)
 #ifndef CPU_H
 #define CPU_H
 #ifdef __cplusplus
@@ -7,12 +5,8 @@ extern "C" {
 #endif
 #pragma pack(push,1)
 
-#include <windows.h>
+#include <Windows.h>
 #include "misc.h"
-
-////////////////////////////////////////////////////////
-// System descriptors
-////////////////////////////////////////////////////////
 
 #define GDT_NULL 0
 #define GDT_R0_CODE 0x08
@@ -27,8 +21,6 @@ extern "C" {
 #define GDT_DOUBLEFAULT_TSS 0x50
 #define GDT_NMI_TSS 0x58
 
-// 16-bit GDT entries:
-// TODO: #define GDT_ABIOS_UNKNOWN   0x60  (22F30-32F2F)
 #define GDT_ABIOS_VIDEO 0x68
 #define GDT_ABIOS_GDT   0x70 // descriptor describing ABIOS GDT itself
 #define GDT_ABIOS_NTOS  0x78 // first 64K of NTOSKRNL
@@ -108,11 +100,7 @@ typedef struct _DESCRIPTOR_ENTRY
     UCHAR   Type : 4;        // 10EWA (code), E=ExpandDown, W=Writable, A=Accessed
                              // 11CRA (data), C=Conforming, R=Readable, A=Accessed
     UCHAR   System : 1;      // if 1 then it is a gate or LDT
-    UCHAR   DPL : 2;         // descriptor privilege level; 
-                             // for data selectors, MAX(CPL, RPL) must be <= DPL to access (or else GP# fault)
-                             // for non-conforming code selectors (without callgate), MAX(CPL, RPL) must be <= DPL to access (or else GP# fault)
-                             // for conforming code selectors, MAX(CPL, RPL) must be >= DPL (i.e., CPL 0-2 cannot access if DPL is 3)
-                             // for non-conforming code selectors (with call gate), DPL indicates lowest privilege allowed to access gate
+    UCHAR   DPL : 2;      
     UCHAR   Present : 1;
     UCHAR   LimitHigh : 4;
     UCHAR   Available: 1;    // aka AVL
@@ -140,7 +128,6 @@ typedef struct _GATE_ENTRY
 #endif
 } GATE_ENTRY;
 
-// TODO: update for X64
 typedef struct _PTE_ENTRY
 {
     ULONG Present : 1;
@@ -157,8 +144,7 @@ typedef struct _PTE_ENTRY
     ULONG Transition : 1;
     ULONG Address : 20;
 } PTE_ENTRY;
-
-// TODO: update for X64
+	
 typedef struct _PDE_ENTRY
 {
 	ULONG Present : 1;
@@ -174,7 +160,6 @@ typedef struct _PDE_ENTRY
 	ULONG Address : 20;
 } PDE_ENTRY;
 
-// TODO: update for X64
 typedef struct _IO_ACCESS_MAP
 {
     UCHAR DirectionMap[32];
@@ -182,7 +167,6 @@ typedef struct _IO_ACCESS_MAP
 } IO_ACCESS_MAP;
 
 #define MIN_TSS_SIZE FIELD_OFFSET(TSS_ENTRY, IoMaps)
-// TODO: update for X64
 typedef struct _TSS_ENTRY
 {
     USHORT  Backlink;
@@ -214,7 +198,6 @@ typedef struct _TSS_ENTRY
     UCHAR IntDirectionMap[32];
 } TSS_ENTRY;
 
-// TODO: update for X64
 typedef struct _TSS16_ENTRY
 {
     USHORT  Backlink;
@@ -241,7 +224,6 @@ typedef struct _TSS16_ENTRY
     USHORT  LDT;
 } TSS16_ENTRY;
 
-// TODO: update for X64
 typedef struct _GDT_ENTRY
 {
     USHORT  LimitLow;

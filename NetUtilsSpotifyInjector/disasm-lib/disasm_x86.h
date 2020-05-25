@@ -1,13 +1,9 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2004, Matt Conover (mconover@gmail.com)
 #ifndef X86_DISASM_H
 #define X86_DISASM_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// NOTE: the processor may actually accept less than this amount (officially 15)
-// #define AMD64_MAX_INSTRUCTION_LEN 15 // theoretical max 25=5+2+1+1+8+8
 #define AMD64_MAX_PREFIX_LENGTH 5 // 4 legacy + 1 rex
 #define AMD64_MAX_ADDRESS_LENGTH 18 // modrm + sib + 8 byte displacement + 8 byte immediate value
 
@@ -42,9 +38,6 @@ extern "C" {
 #define PREFIX_REPNE 0xf2
 #define PREFIX_REP 0xf3
 
-//////////////////////////////////////////////////////////////////
-// Implicit operand handling
-//////////////////////////////////////////////////////////////////
 
 #define X86_AMODE_MASK   0x00FF0000 // bits 16-23 (AMODE_*)
 #define X86_OPFLAGS_MASK 0x0000FF80 // bits 7-15 (OPTYPE_*)
@@ -95,120 +88,53 @@ extern "C" {
 
 
 // NOTE: OPTYPES >= 0x80 reserved for registers (OP_REG+XX)
-#define OPTYPE_REG_AL OP_REG+0x01
-#define OPTYPE_REG_CL OP_REG+0x02
-#define OPTYPE_REG_AH OP_REG+0x03
-#define OPTYPE_REG_AX OP_REG+0x04
-#define OPTYPE_REG_DX OP_REG+0x05
-#define OPTYPE_REG_ECX OP_REG+0x06
-#define OPTYPE_REG8 OP_REG+0x07
+#define OPTYPE_REG_AL (OP_REG+0x01)
+#define OPTYPE_REG_CL (OP_REG+0x02)
+#define OPTYPE_REG_AH (OP_REG+0x03)
+#define OPTYPE_REG_AX (OP_REG+0x04)
+#define OPTYPE_REG_DX (OP_REG+0x05)
+#define OPTYPE_REG_ECX (OP_REG+0x06)
+#define OPTYPE_REG8 (OP_REG+0x07)
 
 // If address size is 2, use BP
 // If address size is 4, use EBP
 // If address size is 8, use RBP
-#define OPTYPE_REG_xBP OP_REG+0x08
+#define OPTYPE_REG_xBP (OP_REG+0x08)
 
 // If address size is 2, use BP
 // If address size is 4, use EBP
 // If address size is 8, use RBP
-#define OPTYPE_REG_xSP OP_REG+0x09
+#define OPTYPE_REG_xSP (OP_REG+0x09)
 
 // If operand size is 2, take 8-bit register
 // If operand size is 4, take 16-bit register
 // If operand size is 8, take 32-bit register
-#define OPTYPE_REG_xAX_SMALL OP_REG+0x0a
+#define OPTYPE_REG_xAX_SMALL (OP_REG+0x0a)
 
 // If operand size is 2, take 16-bit register
 // If operand size is 4, take 32-bit register
 // If operand size is 8, take 64-bit register
-#define OPTYPE_REG_xAX_BIG OP_REG+0x0b
+#define OPTYPE_REG_xAX_BIG (OP_REG+0x0b)
 
 typedef enum _CPU_TYPE
 {
 	CPU_UNKNOWN=0,
-
-	///////////////////////////////////////
-	// 1st generation
-	///////////////////////////////////////
-	// 1978
-	//CPU_8086 = 1MB address limit, 16-bit registers
-	// 1982
-	//CPU_i186
-
-	///////////////////////////////////////
-	// 2nd generation
-	///////////////////////////////////////
-	// 1982
-	//CPU_I286 // 16MB limit, 16-bit registers, added protected mode
-	CPU_I287, // CPU_I286 + math coprocessor
-
-	///////////////////////////////////////
-	// 3rd generation
-	///////////////////////////////////////
-	// 1985
-	CPU_I386, // 32-bit registers, 4GB memory limit
-	// 1988
-	CPU_I387, // CPU_I386 + math coprocessor
-
-	///////////////////////////////////////
-	// 4th generation (1989)
-	///////////////////////////////////////
+	CPU_I287, 
+	CPU_I386, 
+	CPU_I387, 
 	CPU_I486,
-
-	///////////////////////////////////////
-	// 5th generation
-	///////////////////////////////////////
-	// 1993
-	CPU_PENTIUM, // superscalar architecture
-	// 1997
-	//CPU_PENTIUM_MMX
-	
-	///////////////////////////////////////
-	// 6th generation (1995)
-	///////////////////////////////////////
-	CPU_PENTIUM_PRO, // P6 architecture, no MMX, out-of-order execution, speculative execution
-	//CPU_CYRIX_6X86,
-	//CPU_AMD_K5 // RISC processor
-	// 1997
-	CPU_PENTIUM2, // Pentium Pro architecture + MMX
-	//CPU_AMD_K6,
-	//CPU_CYRIX_6X86MX, // Cyrix 6x86 + MMX
-	// 1998
-	CPU_AMD_K6_2, // added 3DNow! (MMX)
-	// 1999
-	// CPU_AMD_K6_3 // added SSE
-
-	///////////////////////////////////////
-	// 7th generation
-	///////////////////////////////////////
-	// 1999
-	CPU_PENTIUM3, // introduced SSE
-	// CPU_AMD_K7 // aka Athlon
-	// 2000
-	CPU_PENTIUM4, // introduced SSE2 and hyperthreading
-
-	// 2004? 2005?
-	CPU_PRESCOTT, // introduced SSE3
-
-	///////////////////////////////////////
-	// 8th generation (X86-64)
-	// IA32 instruction set with 64-bit extensions, >4GB RAM
-	///////////////////////////////////////
-
-	// 2003
-	CPU_AMD64, // includes Athlon 64 and Opteron aka X86-64
-
-	// 2004?
-	//CPU_EMD64 // Intel's version of AMD64
-	CPU_IA64 // aka Itanium: new instruction set -- adds JMPE to IA32 mode to return to IA64 native code
+	CPU_PENTIUM,
+	CPU_PENTIUM_PRO, 
+	CPU_PENTIUM2, 
+	CPU_AMD_K6_2,
+	CPU_PENTIUM3,
+	CPU_PENTIUM4, 
+	CPU_PRESCOTT,
+	CPU_AMD64, 
+	CPU_IA64 
 
 } CPU_TYPE;
 
-//////////////////////////////////////////////////////////////////
-// Conditions (these can be OR'd)
-//////////////////////////////////////////////////////////////////
-
-// Used for Flags.Preconditions
 #define COND_O   (1<<0)  // overflow (signed)
 #define COND_C   (1<<1)  // below (unsigned)
 #define COND_Z   (1<<2)  // equal (unsigned)
@@ -713,18 +639,6 @@ typedef struct _REX_SIB
 } REX_SIB;
 #pragma pack(pop)
 
-//
-// Properties:
-// If an operand is OP_COND_EXEC, it means that it is executed only if the pre-conditions are met.
-//
-// If if an instruction has one or more OP_COND_DST operands, then the actions are determined by
-// whether the Opcode.Preconditions are met or not. If all the COND_* flags in Opcode.Preconditions 
-// are true, then the results are determined by ResultsIfTrue. If the preconditions are not met, then
-// the results are determined by ResultsIfFalse.
-//
-// If Preconditions == NOCOND, then results in ResultsIfTrue are unconditional and ResultsIfFalse
-// is ignored
-//
 typedef struct _X86_OPCODE
 {
 	struct _X86_OPCODE *Table;
@@ -761,23 +675,13 @@ typedef struct _X86_INSTRUCTION
 	};
 
 	// NOTE: these are for internal use, use Instruction->Operands[]
-	//
-	// If DstRegAddressing or SrcRegAddressing = TRUE then BaseRegister is the base register
-	// It is the operand represented by SIBOperand
-	//
-	// The operand indices of the destination operands is in DstOpIndex[0 to DstOpCount-1]
-	// The operand indices of the source operands is in SrcOpIndex[0 to SrcOpCount-1]
-	//
-	// These are used both for instructions like xadd/xchg (where both operands are source/destination)
-	// and to represent implicit registers (e.g., cmpxchg)
 
 	U8 SrcOpIndex[3];
 	U8 DstOpIndex[3];
 
-	// Addressing mode:
-	// If DstRegAddressing = TRUE, then these apply to DstReg
-	// If SrcRegAddressing = TRUE, then this applies to SrcReg[AddressIndex]
-	// If both are false, then SrcReg and DstReg are not addresses
+	// DstRegAddressing == TRUE, apply to DstReg
+	// SrcRegAddressing == TRUE, applies to SrcReg[AddressIndex]
+	// if both are false, then SrcReg and DstReg are not addresses
 	X86_REGISTER BaseRegister;
 	X86_REGISTER IndexRegister;
 	
@@ -811,10 +715,6 @@ typedef struct _X86_INSTRUCTION
 	S64 Displacement;
 
 } X86_INSTRUCTION;
-
-////////////////////////////////////////////////////////////////////////////////////
-// Exported functions
-////////////////////////////////////////////////////////////////////////////////////
 
 extern ARCHITECTURE_FORMAT_FUNCTIONS X86;
 

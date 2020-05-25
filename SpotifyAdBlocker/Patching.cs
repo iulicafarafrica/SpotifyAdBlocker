@@ -117,7 +117,7 @@ namespace SpotifyAdBlocker
             appProcess.ErrorDataReceived += (sender, e) =>
                 Console.WriteLine("error>>" + e.Data);
             appProcess.BeginErrorReadLine();
-            
+
             appProcess.WaitForExit();
 
             Console.WriteLine("ExitCode: {0}", appProcess.ExitCode);

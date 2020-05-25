@@ -1,9 +1,3 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2004, Matt Conover (mconover@gmail.com)
-//
-// The opcode tables in this file are based off the Intel Instruction Set Reference
-// and an assortment of disassemblers, primarily libdisasm (by mammon)
-
 #ifndef DISASM_X86_TABLES
 #define DISASM_X86_TABLES
 
@@ -125,15 +119,9 @@
 #define OPTYPE_sdo  0x17000000 // OPTYPE_ss or OPTYPE_o
 #define OPTYPE_cpu  0x18000000 // pointer to CPU state structure
 #define OPTYPE_lea  0x19000000 // size set by other operand
-// NOTE: if you change this, you must also update OptypeHandlers[] in disasm_x86.c
-// Be sure to preserve the ordering
 
-//////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// Registers
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 
+// preserve ordering
 static char *Addressing16[8] = {"bx+si","bx+di","bp+si","bp+di","si","di","bp","bx"};
 static char *MMX_Registers[8] = {"mm0", "mm1", "mm2", "mm3", "mm4", "mm5", "mm6", "mm7"};
 static char *SSE_Registers[8] = {"xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7"};
@@ -151,12 +139,6 @@ static char *REX_Registers32[16] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "e
 static char *REX_Registers64[16] = {"rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" };
 static char *DataSizes[8+1] = {"byte ptr", "word ptr", "dword ptr", "6_byte ptr", "qword ptr", "10_byte ptr", "INVALID PTR", "INVALID PTR", "oword ptr"};
 
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// FPU constants
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-
 BYTE float_0[10]   = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 BYTE float_1[10] =   { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xFF, 0x3F };
 BYTE float_l2t[10] = { 0xFE, 0x8A, 0x1B, 0xCD, 0x4B, 0x78, 0x9A, 0xD4, 0x00, 0x40 };
@@ -165,12 +147,6 @@ BYTE float_pi[10]  = { 0x35, 0xC2, 0x68, 0x21, 0xA2, 0xDA, 0x0F, 0xC9, 0x00, 0x4
 BYTE float_lg2[10] = { 0x99, 0xF7, 0xCF, 0xFB, 0x84, 0x9A, 0x20, 0x9A, 0xFD, 0x3F };
 BYTE float_ln2[10] = { 0xAC, 0x79, 0xCF, 0xD1, 0xF7, 0x17, 0x72, 0xB1, 0xFE, 0x3F };
 
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// Tables
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-
 extern X86_OPCODE X86_Opcodes_2[0x100];
 extern X86_OPCODE X86_Group_1_80[8], X86_Group_1_81[8], X86_Group_1_82[8], X86_Group_1_83[8], X86_Group_2_C0[8], X86_Group_2_C1[8], X86_Group_2_D0[8], X86_Group_2_D1[8], X86_Group_2_D2[8], X86_Group_2_D3[8], X86_Group_3_F6[8], X86_Group_3_F7[8], X86_Group_4[8], X86_Group_5[8], X86_Group_6[8], X86_Group_7[8], X86_Group_8[8], X86_Group_9[8], X86_Group_10[8], X86_Group_11[8], X86_Group_12_C6[8], X86_Group_12_C7[8], X86_Group_13[8], X86_Group_14[8], X86_Group_15[8], X86_Group_16[8], X86_Group_17[8], X86_Group_P[8];
 extern X86_OPCODE X86_SSE[0x300], X86_SSE2_Group_13[24], X86_SSE2_Group_14[24], X86_SSE2_Group_15[24];
@@ -178,12 +154,6 @@ extern X86_OPCODE X86_ESC_0[0x48], X86_ESC_1[0x48], X86_ESC_2[0x48], X86_ESC_3[0
 extern X86_OPCODE X86_3DNOW_0F[0x100];
 extern X86_OPCODE X86_0F01_ModRM[0x100];
 extern X86_OPCODE X86_Opcode_63[2], X86_Opcode_0F05[2];
-
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// Opcode tables
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 
 X86_OPCODE X86_Opcodes_1[0x100] = // 1 byte opcodes
 {
@@ -455,8 +425,8 @@ X86_OPCODE X86_Opcodes_2[0x100] = // 2 byte opcodes
 	{ X86_Opcode_0F05, EXT_64 }, /* 0x05 */
 	{ NOGROUP, CPU_I386, ITYPE_SYSTEM, "clts", { OPTYPE_CR0 | OP_DST, 0, 0 }, NOCOND, NOCHANGE, NOACTION, IGNORED }, /* 0x06 */
 	{ NOGROUP, CPU_AMD_K6_2, ITYPE_SYSCALLRET, "sysret", { OPTYPE_STAR_MSR | OP_MSR | OP_SRC, 0, 0 }, NOCOND, NOCHANGE, NOACTION, IGNORED }, /* 0x07 */
-	// 0F 07 could also be this undocumented instruction on older CPUs:
-	// { NOGROUP, CPU_I386, ITYPE_SYSTEM, "loadall", { AMODE_Y | OPTYPE_cpu | OP_SRC, 0, 0 }, NOCOND, NOCHANGE, NOACTION, IGNORED }, /* 0x07 */
+	// undocumented instruction found on older cpus - can also be 0x07
+	//{ NOGROUP, CPU_I386, ITYPE_SYSTEM, "loadall", { AMODE_Y | OPTYPE_cpu | OP_SRC, 0, 0 }, NOCOND, NOCHANGE, NOACTION, IGNORED }, /* 0x07 */
 	{ NOGROUP, CPU_I486, ITYPE_SYSTEM, "invd", NOARGS, NOCOND, NOCHANGE, NOACTION, IGNORED }, /* 0x08 */
 	{ NOGROUP, CPU_I486, ITYPE_SYSTEM, "wbinvd", NOARGS, NOCOND, NOCHANGE, NOACTION, IGNORED }, /* 0x09 */
 	{ NOINSTR }, /* 0x0A */
@@ -708,12 +678,6 @@ X86_OPCODE X86_Opcodes_2[0x100] = // 2 byte opcodes
 	{ NOGROUP, CPU_PENTIUM2, ITYPE_MMX_ADD, "paddd", { AMODE_P | OPTYPE_q | OP_DST, AMODE_Q | OPTYPE_q | OP_SRC, 0 }, NOCOND, NOCHANGE, NOACTION, IGNORED }, /* 0xFE */
 	{ NOINSTR } /* 0xFF */, 
 };
-
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// Groups
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 
 X86_OPCODE X86_Group_1_80[8] = // 80
 {
@@ -1823,12 +1787,6 @@ X86_OPCODE X86_ESC_7[0x48] = // DF
 	{ NOINSTR }  // xF
 };
 
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// SSE opcodes
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-
 X86_OPCODE X86_SSE[0x300] =
 {
 	// prefix 0x66 (operand size)
@@ -2798,12 +2756,6 @@ X86_OPCODE X86_SSE2_Group_15[24] =
 		{ NOINSTR }, /* 0x07 */
 };
 
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// 3DNow opcodes
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-
 X86_OPCODE X86_3DNOW_0F[0x100] =
 {
 	{ NOINSTR }, /* 00 */
@@ -3064,12 +3016,6 @@ X86_OPCODE X86_3DNOW_0F[0x100] =
 	{ NOINSTR }	/* FF */
 };
 
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// 64-bit replacement opcodes
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-
 X86_OPCODE X86_Opcode_63[2] =
 {
 	{ NOGROUP, CPU_I386, ITYPE_SYSTEM, "arpl", { AMODE_E | OPTYPE_w | OP_SRC, AMODE_G | OPTYPE_w | OP_SRC, 0 }, NOCOND, FLAG_ZF_MOD, NOACTION, IGNORED }, // !ARCH_AMD64
@@ -3081,12 +3027,6 @@ X86_OPCODE X86_Opcode_0F05[2] =
 	{ NOGROUP, CPU_AMD_K6_2, ITYPE_SYSCALL, "syscall", { OPTYPE_STAR_MSR | OP_MSR | OP_SRC, OPTYPE_CSTAR_MSR | OP_MSR | OP_SRC, OPTYPE_FMASK_MSR | OP_MSR | OP_SRC }, NOCOND, FLAG_ZF_MOD, NOACTION, IGNORED }, // !ARCH_AMD64
 	{ NOGROUP, CPU_AMD64, ITYPE_SYSCALL, "syscall", { OPTYPE_STAR_MSR | OP_MSR | OP_SRC, OPTYPE_LSTAR_MSR | OP_MSR | OP_SRC, OPTYPE_FMASK_MSR | OP_MSR | OP_SRC }, NOCOND, NOCHANGE, NOACTION, IGNORED } // ARCH_AMD64
 };
-
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// Other 3 byte opcodes
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 
 // Three byte opcodes where the third opcode byte is ModRM
 X86_OPCODE X86_0F01_ModRM[0x100] = 
@@ -3379,12 +3319,6 @@ X86_OPCODE X86_0F01_ModRM[0x100] =
   { X86_Group_7, GROUP }, // xE
   { X86_Group_7, GROUP }  // xF
 };
-
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
-// Sanity checking tables
-/////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////
 
 #define S2 1 // SSE2
 #define S3 2 // SSE3

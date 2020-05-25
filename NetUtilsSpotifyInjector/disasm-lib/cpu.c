@@ -1,15 +1,7 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2003, Matt Conover (mconover@gmail.com)
 #include "cpu.h"
 #include <assert.h>
 
-// NOTE: this assumes default scenarios (i.e., we assume CS/DS/ES/SS and flat
-// and all have a base of 0 and limit of 0xffffffff, we don't try to verify
-// that in the GDT)
-//
-// TODO: use inline assembly to get selector for segment
-// Segment = x86 segment register (SEG_ES = 0, SEG_CS = 1, ...)
-BYTE *GetAbsoluteAddressFromSegment(BYTE Segment, DWORD Offset)
+BYTE *GetAbsoluteAddressFromSegment(const BYTE Segment, const DWORD Offset)
 {
 	switch (Segment)
 	{
@@ -18,21 +10,17 @@ BYTE *GetAbsoluteAddressFromSegment(BYTE Segment, DWORD Offset)
 		case 1: // SEG_CS
 		case 2: // SEG_SS
 		case 3: // SEG_DS
-			return (BYTE *)(DWORD_PTR)Offset;
 		case 4: // SEG_FS
 		case 5: // SEG_GS
 			return (BYTE *)(DWORD_PTR)Offset;
-			// Note: we're really supposed to do this, but get_teb is not implemented
-			// in this bastardized version of the disassembler.
-			// return (BYTE *)get_teb() + Offset;
 		default:
 			assert(0);
 			return (BYTE *)(DWORD_PTR)Offset;
 	}
 }
 
-// This is an GDT/LDT selector (pGDT+Selector)
-BYTE *GetAbsoluteAddressFromSelector(WORD Selector, DWORD Offset)
+// GDT/LDT selector (pGDT+Selector)
+BYTE *GetAbsoluteAddressFromSelector(const WORD Selector, DWORD Offset)
 {
 	DESCRIPTOR_ENTRY Entry;
 	GATE_ENTRY *Gate;
@@ -89,6 +77,6 @@ BYTE *GetAbsoluteAddressFromSelector(WORD Selector, DWORD Offset)
 				return NULL;
 		}
 	}
-	return (BYTE *)Base + Offset;
+	return (BYTE*)Base + Offset;
 }
 

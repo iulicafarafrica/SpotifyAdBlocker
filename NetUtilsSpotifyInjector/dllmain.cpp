@@ -20,7 +20,7 @@ FILE _iob[] = { *stdin, *stdout, *stderr };
 extern "C" FILE * __cdecl __iob_func(void)
 {
 	return _iob;
-} ---> external handle fix */
+} ---> external handle fix, no longer needed */
 
 typedef int (WSAAPI* _getaddrinfo)(
 	_In_opt_       PCSTR      pNodeName,
@@ -386,11 +386,13 @@ void Patch(const HMODULE hModule, const MODULEINFO mInfo)
 			// Find the start of the function
 			LPVOID pfnRequireFocusStart = nullptr;
 			LPVOID pfnRequireFocusCurrent = static_cast<char*>(pfnRequireFocus) - 500;
-			while ((pfnRequireFocusCurrent = Search("\x55\x8b\xec\x6a\xff", 5, static_cast<uint8_t*>(pfnRequireFocusCurrent), static_cast<char*>(hEndOfModule) - static_cast<char*>(pfnRequireFocusCurrent))) &&
+			pfnRequireFocusCurrent = Search("\x55\x8b\xec\x6a\xff", 5, static_cast<uint8_t*>(pfnRequireFocusCurrent), static_cast<char*>(hEndOfModule) - static_cast<char*>(pfnRequireFocusCurrent));
+			while (pfnRequireFocusCurrent &&
 				pfnRequireFocusCurrent < pfnRequireFocus)
 			{
 				pfnRequireFocusStart = pfnRequireFocusCurrent;
 				pfnRequireFocusCurrent = static_cast<char*>(pfnRequireFocusCurrent) + 1;
+				pfnRequireFocusCurrent = Search("\x55\x8b\xec\x6a\xff", 5, static_cast<uint8_t*>(pfnRequireFocusCurrent), static_cast<char*>(hEndOfModule) - static_cast<char*>(pfnRequireFocusCurrent));
 			}
 			if (pfnRequireFocusStart)
 			{
@@ -524,7 +526,7 @@ BOOL GetFileVersionInfo(version_t* v)
 	WCHAR moduleFilePath[MAX_PATH];
 	DWORD verHandle;
 	GetModuleFileName(GetModuleHandle(nullptr), reinterpret_cast<LPSTR>(moduleFilePath), MAX_PATH);
-	auto verSize = GetFileVersionInfoSize(reinterpret_cast<LPSTR>(moduleFilePath), &verHandle);
+	const auto verSize = GetFileVersionInfoSize(reinterpret_cast<LPSTR>(moduleFilePath), &verHandle);
 	if (verSize)
 	{
 		LPVOID verBuffer;
@@ -534,7 +536,7 @@ BOOL GetFileVersionInfo(version_t* v)
 			VerQueryValueA(verData, "\\", &verBuffer, &size) &&
 			size)
 		{
-			auto verInfo = static_cast<VS_VERSIONINFO*>(verData);
+			const auto verInfo = static_cast<VS_VERSIONINFO*>(verData);
 			if (verInfo->Value.dwSignature == 0xfeef04bd)
 			{
 				v->dwMajor = verInfo->Value.dwFileVersionMS >> 16 & 0xffff;
@@ -596,9 +598,9 @@ DWORD WINAPI MainThread(LPVOID)
 }
 
 // Entry-point
-BOOL APIENTRY DllMain(const HMODULE hModule,
-                      const DWORD  ul_reason_for_call,
-                      LPVOID lpReserved
+BOOL APIENTRY DllMain(_In_ const HMODULE hModule,
+                      _In_ const DWORD ul_reason_for_call,
+                      _In_ LPVOID lpReserved
 )
 {
 	switch (ul_reason_for_call)
@@ -609,6 +611,15 @@ BOOL APIENTRY DllMain(const HMODULE hModule,
 		// Only patch the main process and none of the renderers/workers
 		if (!wcsstr(reinterpret_cast<wchar_t const*>(GetCommandLine()), L"--type="))
 			CreateThread(nullptr, NULL, MainThread, nullptr, 0, nullptr);
+		break;
+	case DLL_PROCESS_DETACH:
+		__asm ret;
+		break;
+	default:
+		if (ul_reason_for_call > 1)
+		{
+			// todo: add special case for thread cases (DLL_THREAD_ATTACH/DETACH) (??)
+		}
 		break;
 	}
 	return TRUE;

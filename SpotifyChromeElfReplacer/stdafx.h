@@ -5,8 +5,8 @@
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows/library Header Files:
-#include <windows.h>
-#include <winsock2.h>
+#include <Windows.h>
+#include <Winsock2.h>
 #include <Psapi.h>
 #include <fstream>
 #include <future>

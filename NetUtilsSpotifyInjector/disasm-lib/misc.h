@@ -1,12 +1,10 @@
-// Library found here (disasm): https://github.com/martona/mhook/tree/master/disasm-lib
-// Copyright (C) 2002, Matt Conover (mconover@gmail.com)
 #ifndef MISC_H
 #define MISC_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <windows.h>
+#include <Windows.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>

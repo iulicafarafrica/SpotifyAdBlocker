@@ -52,7 +52,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>netutils</TargetName>
-    <OutDir>$(ProjectDir)\Release\DeltaOut</OutDir>
+    <OutDir>$(ProjectDir)\Release\DeltaOut\</OutDir>
     <IncludePath>$(ACE_ROOT);$(IncludePath)</IncludePath>
     <LibraryPath>$(ACE_ROOT)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
