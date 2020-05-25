@@ -91,9 +91,6 @@
     <None Include="SpotifyAdBlockerSigning.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="hosts" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="App.ico" />
   </ItemGroup>
   <ItemGroup>

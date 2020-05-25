@@ -87,7 +87,7 @@ namespace SpotifyAdBlocker
                 Environment.Exit(0xBC); // ERROR_INVALID_STARTING_CODESEG
             }
 
-            NormalMsg(@"PATCHING SUCCEEDED: You might need to restart spotify/your computer for patches to apply. Furthermore, this patch may not only block spotify ads, but other types of advertisements as well due to intertwining ad servers, which is a bonus, because who actually likes advertisments?", true);
+            NormalMsg(@"PATCHING SUCCEEDED: As an additional note, this patch may not only block spotify ads, but other types of advertisements as well due to intertwining ad servers, which is a bonus, because who actually likes advertisments?", true);
             Environment.Exit(0x0); // SUCCESS
         }
 
