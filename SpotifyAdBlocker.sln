@@ -5,16 +5,52 @@ VisualStudioVersion = 16.0.30114.128
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpotifyAdBlocker", "SpotifyAdBlocker\SpotifyAdBlocker.csproj", "{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpotifyChromeElfReplacer", "SpotifyChromeElfReplacer\SpotifyChromeElfReplacer.vcxproj", "{82F7E20E-D166-4474-8EB1-81160355B5B2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetUtilsSpotifyInjector", "NetUtilsSpotifyInjector\NetUtilsSpotifyInjector.vcxproj", "{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Debug|Any CPU.ActiveCfg = Release|Any CPU
 		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Debug|x64.Build.0 = Debug|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Debug|x86.Build.0 = Debug|Any CPU
 		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Release|x64.ActiveCfg = Release|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Release|x64.Build.0 = Release|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Release|x86.ActiveCfg = Release|Any CPU
+		{0EE61E1E-4CA8-4DB5-BFF9-A6F5F0DCCD76}.Release|x86.Build.0 = Release|Any CPU
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Debug|x64.ActiveCfg = Debug|x64
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Debug|x64.Build.0 = Debug|x64
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Debug|x86.ActiveCfg = Debug|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Debug|x86.Build.0 = Debug|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Release|Any CPU.ActiveCfg = Release|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Release|Any CPU.Build.0 = Release|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Release|x64.ActiveCfg = Release|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Release|x64.Build.0 = Release|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Release|x86.ActiveCfg = Release|Win32
+		{82F7E20E-D166-4474-8EB1-81160355B5B2}.Release|x86.Build.0 = Release|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Debug|x64.ActiveCfg = Debug|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Debug|x86.ActiveCfg = Debug|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Debug|x86.Build.0 = Debug|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Release|Any CPU.ActiveCfg = Release|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Release|Any CPU.Build.0 = Release|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Release|x64.ActiveCfg = Release|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Release|x86.ActiveCfg = Release|Win32
+		{AC55F758-C1CD-479C-BAFF-8ADE74BB6516}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

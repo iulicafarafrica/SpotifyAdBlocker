@@ -15,17 +15,13 @@ Release | AnyCPU - embedded debug info
 
 NetUtilsSpotifyInjector and SpotifyChromeElfReplacer (C++)
 
-Release | AnyCPU/x32 - no debug info
+Release | Win32 - no debug info
 
 Windows SDK (C++): 10.0.17763.0 (later versions won't compile due to bit alignment max being screwed up, in `winnt.h`)
 
 Bit alignment set to 8
 
 Compiler optimizations added 
-
-Both DLLs linked with the following command: `link /DLL /out:dllname.dll /LTCG *.obj MSVCRTD.lib User32.lib Gdi32.lib ole32.lib Comdlg32.lib OleAut32.lib`
-
-Generates warning `LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library`, can be safely ignored 
 
 
 
