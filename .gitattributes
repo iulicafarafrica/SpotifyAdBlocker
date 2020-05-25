@@ -1,2 +1,5 @@
-disasm-lib/* linguist-vendored=true
-mhook-lib/* linguist-vendored=true 
+NetUtilsSpotifyInjector/disasm-lib/* linguist-vendored=true
+NetUtilsSpotifyInjector/mhook-lib/* linguist-vendored=true 
+
+SpotifyChromeElfReplacer/disasm-lib/* linguist-vendored=true
+SpotifyChromeElfReplacer/mhook-lib/* linguist-vendored=true 
