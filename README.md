@@ -23,7 +23,7 @@ Bit alignment set to 8
 
 Compiler optimizations added 
 
-Linked with the following command: `link /DLL /out:netutils.dll /LTCG *.obj MSVCRTD.lib User32.lib Gdi32.lib ole32.lib Comdlg32.lib OleAut32.lib`
+Both DLLs linked with the following command: `link /DLL /out:dllname.dll /LTCG *.obj MSVCRTD.lib User32.lib Gdi32.lib ole32.lib Comdlg32.lib OleAut32.lib`
 
 Generates error `LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library`, can be safely ignored 
 
