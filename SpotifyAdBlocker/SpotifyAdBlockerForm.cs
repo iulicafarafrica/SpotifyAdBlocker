@@ -12,9 +12,20 @@ namespace SpotifyAdBlocker
             Icon = resxicon;
         }
 
+        private void OnFormLoad(object sender, EventArgs e)
+        {
+        }
+
         private void PatchButtonActionClick(object sender, EventArgs e)
         {
-            new Patching().Patch();
+            _patchclient.MainPatch();
         }
+
+        private void HostsFilePatchDeprecatedActionClick(object sender, EventArgs e)
+        {
+            _patchclient.DeprecatedHostsPatch();
+        }
+
+        private readonly Patching _patchclient = new Patching();
     }
 }
