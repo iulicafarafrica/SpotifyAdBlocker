@@ -39,33 +39,5 @@ namespace SpotifyAdBlocker
             MutexInst.Close();
             MutexInst = null;
         }
-
-        // SpotifyAdBlocker internal metadata
-        private static readonly string AppFullExePath = Application.ExecutablePath.Replace("/", "\\");
-
-        internal static void RestartProgramAsAdmin()
-        {
-            try
-            {
-                CleanMutex();
-                var pinfocopy = new ProcessStartInfo
-                {
-                    FileName = AppFullExePath,
-                    UseShellExecute = true,
-                    Verb = "runas"
-                };
-
-                using (var pcopy = new Process {StartInfo = pinfocopy})
-                {
-                    pcopy.Start();
-                }
-
-                Process.GetCurrentProcess().Kill();
-            }
-            catch
-            {
-                MutexInst = new Mutex(true, MutexName);
-            }
-        }
     }
 }

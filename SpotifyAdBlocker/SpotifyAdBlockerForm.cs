@@ -21,11 +21,6 @@ namespace SpotifyAdBlocker
             _patchclient.MainPatch();
         }
 
-        private void HostsFilePatchDeprecatedActionClick(object sender, EventArgs e)
-        {
-            _patchclient.DeprecatedHostsPatch();
-        }
-
         private readonly Patching _patchclient = new Patching();
     }
 }
